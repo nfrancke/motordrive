@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include <geometry_msgs/Twist.h>
+#include <std_msgs/Float32MultiArray.h>
 
 #include "ros/ros.h"
 
@@ -12,9 +13,11 @@ using namespace LibSerial;
 
 bool initSerialPort(SerialStream& serial_port, string sSerialPort);
 
-//void commandRPMReceived(){
-//	ROS_DEBUG("command received");
-//}
+void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg){
+	ROS_INFO("command received");
+}
+
+//name topic: mcWheelVelocityMps
 
 int main(int argc, char **argv  )
 {
@@ -25,8 +28,6 @@ int main(int argc, char **argv  )
 	ros::NodeHandle nh;
 	ros::Rate rate(100);
 	
-	//	ros::Subscriber sub = nh.subscribe("turtle1/cmd_vel",1000,&commandRPMReceived);
-	
 	ROS_INFO("Ros is initialized");	
 
 	//
@@ -35,29 +36,22 @@ int main(int argc, char **argv  )
 	SerialStream serial_port5;
 	SerialStream serial_port7;
 	SerialStream serial_port8;
-
-
-	bool bInitSerialOk = initSerialPort(serial_port5,"/dev/ttyS5");
 	
 	//check if init serial went good.
-	if(!bInitSerialOk){
-		return 1;
+	if((initSerialPort(serial_port5,"/dev/ttyS5") 
+		&& initSerialPort(serial_port7,"/dev/ttyS7") 
+		&& initSerialPort(serial_port8,"/dev/ttyS8")) 
+		!= 1){
+			return 1;
 	}
+	ROS_INFO("All serial ports are initialized");		
 
-	bInitSerialOk = initSerialPort(serial_port7,"/dev/ttyS7");
-	
-	//check if init serial went good.
-	if(!bInitSerialOk){
-		return 1;
-	}
+	ros::Subscriber sub = nh.subscribe("mcWheelVelocityMps",1000, commandRpmReceived);
 
-	bInitSerialOk = initSerialPort(serial_port8,"/dev/ttyS8");
-	
-	//check if init serial went good.
-	if(!bInitSerialOk){
-		return 1;
-	}
+	ros::spin();
 
+	return 0;
+/*
 	//
 	// Do not skip whitespace characters while reading from the
 	// serial port.
@@ -135,6 +129,7 @@ int main(int argc, char **argv  )
 //     }
 
      return EXIT_SUCCESS ;
+*/
 }
 
 bool initSerialPort(SerialStream& serialPort,string sSerialPort){
