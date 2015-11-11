@@ -14,10 +14,12 @@ using namespace LibSerial;
 bool initSerialPort(SerialStream& serial_port, string sSerialPort);
 
 void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg){
-	ROS_INFO("command received");
-}
+	ROS_INFO("Float32MultiArray received");
 
-//name topic: mcWheelVelocityMps
+	float dstride0 = msg->layout.dim[0].stride;
+
+	ROS_INFO("mat(0,0) = %f" , msg->data[0 + dstride0*0]);
+}
 
 int main(int argc, char **argv  )
 {
