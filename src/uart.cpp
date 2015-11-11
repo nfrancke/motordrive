@@ -34,7 +34,9 @@ public:
 
 		float dstride0 = msg->layout.dim[0].stride;
 
-		ROS_INFO("mat(0,0) = %f" , msg->data[0 + dstride0*0]);
+		ROS_INFO("data 0 = %f" , msg->data[0]);
+		ROS_INFO("data 1 = %f" , msg->data[1]);
+		ROS_INFO("data 2 = %f" , msg->data[2]);
 
 		iSpeed[5] = msg->data[0 + dstride0*0];
 		iSpeed[7] = msg->data[0 + dstride0*0];
