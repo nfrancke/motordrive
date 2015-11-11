@@ -11,14 +11,22 @@
 using namespace std;
 using namespace LibSerial;
 
+//
+// Init the serial port.
+//
+SerialStream serial_port5;
+SerialStream serial_port7;
+SerialStream serial_port8;
+
 class Subscribe
 {
 public:
-	Subscribe()
+	int iSpeed[3];
+
+	Subscribe(ros::NodeHandle nh)
 	{
 		sub = nh.subscribe("mcWheelVelocityMps",1000, &Subscribe::commandRpmReceived, this);
 	}
-
 
 	void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	{
@@ -27,16 +35,52 @@ public:
 		float dstride0 = msg->layout.dim[0].stride;
 
 		ROS_INFO("mat(0,0) = %f" , msg->data[0 + dstride0*0]);
+
+		char out_buf[8];
+		
+		//Define data
+		out_buf[0] = 0x5a;	//start of frame
+		out_buf[1] = 0xaa;	//type
+		out_buf[2] = 0x03;	//cmd
+		out_buf[3] = (iSpeed[0] & 0xff);		//speed	
+		out_buf[4] = (iSpeed[0] >> 8) & 0xff;	//speed
+		out_buf[5] = 0x00;	//????
+		out_buf[6] = 0x00;	//????
+		out_buf[7] = 0x00;	//End of frame
+
+		//write data to serial port.
+       	serial_port5.write(out_buf, 8);
+
+		//Define data
+		out_buf[0] = 0x5a;	//start of frame
+		out_buf[1] = 0xaa;	//type
+		out_buf[2] = 0x03;	//cmd
+		out_buf[3] = (iSpeed[1] & 0xff);		//speed	
+		out_buf[4] = (iSpeed[1] >> 8) & 0xff;	//speed
+		out_buf[5] = 0x00;	//????
+		out_buf[6] = 0x00;	//????
+		out_buf[7] = 0x00;	//End of frame
+
+       	serial_port7.write(out_buf, 8);
+
+		//Define data
+		out_buf[0] = 0x5a;	//start of frame
+		out_buf[1] = 0xaa;	//type
+		out_buf[2] = 0x03;	//cmd
+		out_buf[3] = (iSpeed[2] & 0xff);		//speed	
+		out_buf[4] = (iSpeed[2] >> 8) & 0xff;	//speed
+		out_buf[5] = 0x00;	//????
+		out_buf[6] = 0x00;	//????
+		out_buf[7] = 0x00;	//End of frame
+
+       	serial_port8.write(out_buf, 8);
 	}
 
 private:
-	ros::NodeHandle nh;
 	ros::Subscriber sub;
 };//end of class Subscribe
 
 bool initSerialPort(SerialStream& serial_port, string sSerialPort);
-
-
 
 
 int main(int argc, char **argv  )
@@ -44,31 +88,24 @@ int main(int argc, char **argv  )
 	//initialize ROS
 	ros::init(argc, argv, "mcMotorDriver");
 	
-	//create class
-	Subscribe Sobject;
-/*
-	//define a nodehandle and define the rate for the "ros while loop"
 	ros::NodeHandle nh;
-	ros::Rate rate(100);
-	
-	ROS_INFO("Ros is initialized");	
 
-	//
-	// Init the serial port.
-	//
-	SerialStream serial_port5;
-	SerialStream serial_port7;
-	SerialStream serial_port8;
-	
 	//check if init serial went good.
 	if((initSerialPort(serial_port5,"/dev/ttyS5") 
 		&& initSerialPort(serial_port7,"/dev/ttyS7") 
 		&& initSerialPort(serial_port8,"/dev/ttyS8")) 
 		!= 1){
-			return 1;
+	return 1;
 	}
-	ROS_INFO("All serial ports are initialized");		
+	ROS_INFO("All serial ports are initialized");	
 
+	//create class
+	Subscribe Sobject(nh);
+	Sobject.iSpeed[0] = 0x0020;
+	Sobject.iSpeed[1] = 0x0020;
+	Sobject.iSpeed[2] = 0x0020;
+
+/*
 	ros::Subscriber sub = nh.subscribe("mcWheelVelocityMps",1000, commandRpmReceived);
 */
 	ros::spin();
@@ -142,14 +179,6 @@ int main(int argc, char **argv  )
 
 		rate.sleep();
 	}
-
-//     while(1)
-//     {
-//         char next_byte;
-//         serial_port.get(next_byte);  HERE I RECEIVE THE FIRST ANSWER
-//         std::cerr << next_byte;
-//
-//     }
 
      return EXIT_SUCCESS ;
 */
