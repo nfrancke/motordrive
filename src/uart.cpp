@@ -11,21 +11,42 @@
 using namespace std;
 using namespace LibSerial;
 
+class Subscribe
+{
+public:
+	Subscribe()
+	{
+		sub = nh.subscribe("mcWheelVelocityMps",1000, &Subscribe::commandRpmReceived, this);
+	}
+
+
+	void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg)
+	{
+		ROS_INFO("Float32MultiArray received");
+
+		float dstride0 = msg->layout.dim[0].stride;
+
+		ROS_INFO("mat(0,0) = %f" , msg->data[0 + dstride0*0]);
+	}
+
+private:
+	ros::NodeHandle nh;
+	ros::Subscriber sub;
+};//end of class Subscribe
+
 bool initSerialPort(SerialStream& serial_port, string sSerialPort);
 
-void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg){
-	ROS_INFO("Float32MultiArray received");
 
-	float dstride0 = msg->layout.dim[0].stride;
 
-	ROS_INFO("mat(0,0) = %f" , msg->data[0 + dstride0*0]);
-}
 
 int main(int argc, char **argv  )
 {
 	//initialize ROS
 	ros::init(argc, argv, "mcMotorDriver");
-
+	
+	//create class
+	Subscribe Sobject;
+/*
 	//define a nodehandle and define the rate for the "ros while loop"
 	ros::NodeHandle nh;
 	ros::Rate rate(100);
@@ -49,7 +70,7 @@ int main(int argc, char **argv  )
 	ROS_INFO("All serial ports are initialized");		
 
 	ros::Subscriber sub = nh.subscribe("mcWheelVelocityMps",1000, commandRpmReceived);
-
+*/
 	ros::spin();
 
 	return 0;
