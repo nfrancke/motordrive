@@ -34,7 +34,7 @@ int main(int argc, char **argv  )
 	//
 	SerialStream serial_port;
 
-	bool bInitSerialOk = initSerialPort(serial_port,"/dev/ttyS7");
+	bool bInitSerialOk = initSerialPort(serial_port,"/dev/ttyS5");
 	
 	//check if init serial went good.
 	if(!bInitSerialOk){

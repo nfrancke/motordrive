@@ -32,9 +32,26 @@ int main(int argc, char **argv  )
 	//
 	// Init the serial port.
 	//
-	SerialStream serial_port;
+	SerialStream serial_port5;
+	SerialStream serial_port7;
+	SerialStream serial_port8;
 
-	bool bInitSerialOk = initSerialPort(serial_port,"/dev/ttyS5");
+
+	bool bInitSerialOk = initSerialPort(serial_port5,"/dev/ttyS5");
+	
+	//check if init serial went good.
+	if(!bInitSerialOk){
+		return 1;
+	}
+
+	bInitSerialOk = initSerialPort(serial_port7,"/dev/ttyS7");
+	
+	//check if init serial went good.
+	if(!bInitSerialOk){
+		return 1;
+	}
+
+	bInitSerialOk = initSerialPort(serial_port8,"/dev/ttyS8");
 	
 	//check if init serial went good.
 	if(!bInitSerialOk){
@@ -79,7 +96,9 @@ int main(int argc, char **argv  )
 		out_buf[7] = 0x00;	//End of frame
 
 		//write data to serial port.
-       	serial_port.write(out_buf, 8);
+       	serial_port5.write(out_buf, 8);
+       	serial_port7.write(out_buf, 8);
+       	serial_port8.write(out_buf, 8);
 
 		rate.sleep();
 	}
