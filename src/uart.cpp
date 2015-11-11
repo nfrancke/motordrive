@@ -21,7 +21,7 @@ SerialStream serial_port8;
 class Subscribe
 {
 public:
-	int iSpeed[3];
+	int iSpeed[10];
 
 	Subscribe(ros::NodeHandle nh)
 	{
@@ -36,14 +36,18 @@ public:
 
 		ROS_INFO("mat(0,0) = %f" , msg->data[0 + dstride0*0]);
 
-		char out_buf[8];
+		iSpeed[5] = msg->data[0 + dstride0*0];
+		iSpeed[7] = msg->data[0 + dstride0*0];
+		iSpeed[8] = msg->data[0 + dstride0*0];
+
+		char out_buf[10];
 		
 		//Define data
 		out_buf[0] = 0x5a;	//start of frame
 		out_buf[1] = 0xaa;	//type
 		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[0] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[0] >> 8) & 0xff;	//speed
+		out_buf[3] = (iSpeed[5] & 0xff);		//speed	
+		out_buf[4] = (iSpeed[5] >> 8) & 0xff;	//speed
 		out_buf[5] = 0x00;	//????
 		out_buf[6] = 0x00;	//????
 		out_buf[7] = 0x00;	//End of frame
@@ -55,8 +59,8 @@ public:
 		out_buf[0] = 0x5a;	//start of frame
 		out_buf[1] = 0xaa;	//type
 		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[1] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[1] >> 8) & 0xff;	//speed
+		out_buf[3] = (iSpeed[7] & 0xff);		//speed	
+		out_buf[4] = (iSpeed[7] >> 8) & 0xff;	//speed
 		out_buf[5] = 0x00;	//????
 		out_buf[6] = 0x00;	//????
 		out_buf[7] = 0x00;	//End of frame
@@ -67,8 +71,8 @@ public:
 		out_buf[0] = 0x5a;	//start of frame
 		out_buf[1] = 0xaa;	//type
 		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[2] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[2] >> 8) & 0xff;	//speed
+		out_buf[3] = (iSpeed[8] & 0xff);		//speed	
+		out_buf[4] = (iSpeed[8] >> 8) & 0xff;	//speed
 		out_buf[5] = 0x00;	//????
 		out_buf[6] = 0x00;	//????
 		out_buf[7] = 0x00;	//End of frame
@@ -101,87 +105,15 @@ int main(int argc, char **argv  )
 
 	//create class
 	Subscribe Sobject(nh);
-	Sobject.iSpeed[0] = 0x0020;
-	Sobject.iSpeed[1] = 0x0020;
-	Sobject.iSpeed[2] = 0x0020;
+//	Sobject.iSpeed[5] = 0x0020;
+//	Sobject.iSpeed[7] = 0x0020;
+//	Sobject.iSpeed[8] = 0x0020;
 
-/*
-	ros::Subscriber sub = nh.subscribe("mcWheelVelocityMps",1000, commandRpmReceived);
-*/
+	//	ros::Subscriber sub = nh.subscribe("mcWheelVelocityMps",1000, commandRpmReceived);	
+
 	ros::spin();
 
 	return 0;
-/*
-	//
-	// Do not skip whitespace characters while reading from the
-	// serial port.
-	//
-	// serial_port.unsetf( std::ios_base::skipws ) ;
-	//
-	// Wait for some data to be available at the serial port.
-	//
-	//
-	// Wait for some data to be available at the serial port.
-	// Keep reading data from serial port and print it to the screen.	
-	//
-   
-
-	//
-	//    while( serial_port.rdbuf()->in_avail() > 0 )
-
-	int iSpeed[3];	
-	iSpeed[0] = 0x0020;
-	iSpeed[1] = 0x0020;
-	iSpeed[2] = 0x0020;
-
-	while(ros::ok())
-	{
-		ROS_INFO_ONCE("ROS WHILE IS RUNNING");
-
-		char out_buf[8];
-		
-		//Define data
-		out_buf[0] = 0x5a;	//start of frame
-		out_buf[1] = 0xaa;	//type
-		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[0] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[0] >> 8) & 0xff;	//speed
-		out_buf[5] = 0x00;	//????
-		out_buf[6] = 0x00;	//????
-		out_buf[7] = 0x00;	//End of frame
-
-		//write data to serial port.
-       	serial_port5.write(out_buf, 8);
-
-		//Define data
-		out_buf[0] = 0x5a;	//start of frame
-		out_buf[1] = 0xaa;	//type
-		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[1] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[1] >> 8) & 0xff;	//speed
-		out_buf[5] = 0x00;	//????
-		out_buf[6] = 0x00;	//????
-		out_buf[7] = 0x00;	//End of frame
-
-       	serial_port7.write(out_buf, 8);
-
-		//Define data
-		out_buf[0] = 0x5a;	//start of frame
-		out_buf[1] = 0xaa;	//type
-		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[2] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[2] >> 8) & 0xff;	//speed
-		out_buf[5] = 0x00;	//????
-		out_buf[6] = 0x00;	//????
-		out_buf[7] = 0x00;	//End of frame
-
-       	serial_port8.write(out_buf, 8);
-
-		rate.sleep();
-	}
-
-     return EXIT_SUCCESS ;
-*/
 }
 
 bool initSerialPort(SerialStream& serialPort,string sSerialPort){
