@@ -1,0 +1,9 @@
+<launch>
+	<node
+		pkg				=			"motordrive"
+		type			=			"uart"
+		name			=			"uart"
+		required		=			"true"
+		output			=			"screen"
+	/>
+</launch>
