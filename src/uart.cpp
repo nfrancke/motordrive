@@ -21,7 +21,7 @@ SerialStream serial_port8;
 class Subscribe
 {
 public:
-	int iSpeed[10];
+	int iSpeed[10];	
 
 	Subscribe(ros::NodeHandle nh)
 	{
@@ -41,9 +41,28 @@ public:
 		iSpeed[5] = msg->data[0 + dstride0*0];
 		iSpeed[7] = msg->data[0 + dstride0*0];
 		iSpeed[8] = msg->data[0 + dstride0*0];
-
-		char out_buf[10];
 		
+		struct Output{ char cOutBuf[8];};
+		Output serialPorts[10];		
+		
+		for(int i = 0 ; i < 8 ; i++){
+			serialPorts[i].cOutBuf[0] = 0x5a; //start of frame
+			serialPorts[i].cOutBuf[1] = 0xaa; //start of frame
+			serialPorts[i].cOutBuf[2] = 0x03; //start of frame
+			serialPorts[i].cOutBuf[3] = (iSpeed[i] & 0xff);		//speed
+			serialPorts[i].cOutBuf[4] = (iSpeed[i] >> 8) & 0xff;	//speed
+			serialPorts[i].cOutBuf[5] = 0x00; //??
+			serialPorts[i].cOutBuf[6] = 0x00; //??
+			serialPorts[i].cOutBuf[7] = 0x00; //eof
+		}	
+			
+      	 	serial_port5.write(serialPorts[5].cOutBuf, 8);
+      		serial_port7.write(serialPorts[7].cOutBuf, 8);
+    		serial_port8.write(serialPorts[8].cOutBuf, 8);
+		
+//		char out_buf[8];
+
+/*	
 		//Define data
 		out_buf[0] = 0x5a;	//start of frame
 		out_buf[1] = 0xaa;	//type
@@ -80,6 +99,7 @@ public:
 		out_buf[7] = 0x00;	//End of frame
 
        	serial_port8.write(out_buf, 8);
+*/
 	}
 
 private:
@@ -107,9 +127,6 @@ int main(int argc, char **argv  )
 
 	//create class
 	Subscribe Sobject(nh);
-//	Sobject.iSpeed[5] = 0x0020;
-//	Sobject.iSpeed[7] = 0x0020;
-//	Sobject.iSpeed[8] = 0x0020;
 
 	//	ros::Subscriber sub = nh.subscribe("mcWheelVelocityMps",1000, commandRpmReceived);	
 
