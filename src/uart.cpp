@@ -21,7 +21,8 @@ SerialStream serial_port8;
 class Subscribe
 {
 public:
-	int iSpeed[10];	
+	struct Output{ char cOutBuf[8]; int iSpeed;};
+	Output serialPorts[10];	
 
 	Subscribe(ros::NodeHandle nh)
 	{
@@ -30,76 +31,39 @@ public:
 
 	void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	{
-		ROS_INFO("Float32MultiArray received");
+		ROS_INFO_ONCE("Float32MultiArray received");
+
+
 
 		float dstride0 = msg->layout.dim[0].stride;
 
-		ROS_INFO("data 0 = %f" , msg->data[0]);
-		ROS_INFO("data 1 = %f" , msg->data[1]);
-		ROS_INFO("data 2 = %f" , msg->data[2]);
+		for(int i = 0; i < 10 ; i++){
+			ROS_INFO("data poort %i = %f" , i, msg->data[0]);
+		}
 
-		iSpeed[5] = msg->data[0 + dstride0*0];
-		iSpeed[7] = msg->data[0 + dstride0*0];
-		iSpeed[8] = msg->data[0 + dstride0*0];
-		
-		struct Output{ char cOutBuf[8];};
-		Output serialPorts[10];		
-		
-		for(int i = 0 ; i < 8 ; i++){
+		for(int i = 0 ; i < 10 ; i++){
+			serialPorts[i].iSpeed = msg->data[i];
+		}	
+
+		//for testing
+		serialPorts[5].iSpeed = msg->data[0];
+		serialPorts[7].iSpeed = msg->data[0];
+		serialPorts[8].iSpeed = msg->data[0];
+				
+		for(int i = 0 ; i < 10 ; i++){
 			serialPorts[i].cOutBuf[0] = 0x5a; //start of frame
 			serialPorts[i].cOutBuf[1] = 0xaa; //start of frame
 			serialPorts[i].cOutBuf[2] = 0x03; //start of frame
-			serialPorts[i].cOutBuf[3] = (iSpeed[i] & 0xff);		//speed
-			serialPorts[i].cOutBuf[4] = (iSpeed[i] >> 8) & 0xff;	//speed
+			serialPorts[i].cOutBuf[3] = (serialPorts[i].iSpeed & 0xff);			//speed
+			serialPorts[i].cOutBuf[4] = (serialPorts[i].iSpeed >> 8) & 0xff;	//speed
 			serialPorts[i].cOutBuf[5] = 0x00; //??
 			serialPorts[i].cOutBuf[6] = 0x00; //??
 			serialPorts[i].cOutBuf[7] = 0x00; //eof
 		}	
 			
-      	 	serial_port5.write(serialPorts[5].cOutBuf, 8);
-      		serial_port7.write(serialPorts[7].cOutBuf, 8);
-    		serial_port8.write(serialPorts[8].cOutBuf, 8);
-		
-//		char out_buf[8];
-
-/*	
-		//Define data
-		out_buf[0] = 0x5a;	//start of frame
-		out_buf[1] = 0xaa;	//type
-		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[5] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[5] >> 8) & 0xff;	//speed
-		out_buf[5] = 0x00;	//????
-		out_buf[6] = 0x00;	//????
-		out_buf[7] = 0x00;	//End of frame
-
-		//write data to serial port.
-       	serial_port5.write(out_buf, 8);
-
-		//Define data
-		out_buf[0] = 0x5a;	//start of frame
-		out_buf[1] = 0xaa;	//type
-		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[7] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[7] >> 8) & 0xff;	//speed
-		out_buf[5] = 0x00;	//????
-		out_buf[6] = 0x00;	//????
-		out_buf[7] = 0x00;	//End of frame
-
-       	serial_port7.write(out_buf, 8);
-
-		//Define data
-		out_buf[0] = 0x5a;	//start of frame
-		out_buf[1] = 0xaa;	//type
-		out_buf[2] = 0x03;	//cmd
-		out_buf[3] = (iSpeed[8] & 0xff);		//speed	
-		out_buf[4] = (iSpeed[8] >> 8) & 0xff;	//speed
-		out_buf[5] = 0x00;	//????
-		out_buf[6] = 0x00;	//????
-		out_buf[7] = 0x00;	//End of frame
-
-       	serial_port8.write(out_buf, 8);
-*/
+      	serial_port5.write(serialPorts[5].cOutBuf, 8);
+      	serial_port7.write(serialPorts[7].cOutBuf, 8);
+    	serial_port8.write(serialPorts[8].cOutBuf, 8);
 	}
 
 private:
