@@ -27,18 +27,20 @@ public:
 	Subscribe(ros::NodeHandle nh)
 	{
 		sub = nh.subscribe("mcWheelVelocityMps",1000, &Subscribe::commandRpmReceived, this);
+		
+		const std::string sParamName = "iConvertFactor";
+		int iTest;
+		if(!ros::param::get(sParamName,iTest)){
+			ROS_ERROR("Could not get parameter");
+		}
 	}
 
 	void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	{
-		ROS_INFO_ONCE("Float32MultiArray received");
-
-
-
-		float dstride0 = msg->layout.dim[0].stride;
+		ROS_INFO("Float32MultiArray received");
 
 		for(int i = 0; i < 10 ; i++){
-			ROS_INFO("data poort %i = %f" , i, msg->data[0]);
+			ROS_INFO("data poort %i = %f" , i, msg->data[i]);
 		}
 
 		for(int i = 0 ; i < 10 ; i++){
@@ -46,9 +48,9 @@ public:
 		}	
 
 		//for testing
-		serialPorts[5].iSpeed = msg->data[0];
-		serialPorts[7].iSpeed = msg->data[0];
-		serialPorts[8].iSpeed = msg->data[0];
+//		serialPorts[5].iSpeed = msg->data[0];
+//		serialPorts[7].iSpeed = msg->data[0];
+//		serialPorts[8].iSpeed = msg->data[0];
 				
 		for(int i = 0 ; i < 10 ; i++){
 			serialPorts[i].cOutBuf[0] = 0x5a; //start of frame
@@ -61,9 +63,9 @@ public:
 			serialPorts[i].cOutBuf[7] = 0x00; //eof
 		}	
 			
-      	serial_port5.write(serialPorts[5].cOutBuf, 8);
-      	serial_port7.write(serialPorts[7].cOutBuf, 8);
-    	serial_port8.write(serialPorts[8].cOutBuf, 8);
+      	serial_port5.write(serialPorts[5-1].cOutBuf, 8);
+      	serial_port7.write(serialPorts[7-1].cOutBuf, 8);
+    	serial_port8.write(serialPorts[8-1].cOutBuf, 8);
 	}
 
 private:
