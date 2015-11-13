@@ -1,4 +1,7 @@
 <launch>
+	<param name= "iConvertFactor" value = "1" />
+	<param name= "iMaxPulseSpeed" value = "150" />
+	<param name= "iMinPulseSpeed" value = "-150" />
 	<node
 		pkg				=			"motordrive"
 		type			=			"uart"
