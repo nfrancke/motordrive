@@ -28,8 +28,10 @@ public:
 	{
 		sub = nh.subscribe("mcWheelVelocityMps",1000, &Subscribe::commandRpmReceived, this);
 		
+
+//		nh.setParam("iConvertFactor",100);
 //		const std::string sParamName = "iConvertFactor";
-//		int iTest;
+//		int iTest = 20;
 //		if(!ros::param::get(sParamName,iTest)){
 //			ROS_ERROR("Could not get parameter");
 //		}

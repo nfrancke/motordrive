@@ -58,18 +58,18 @@ int main(int argc, char **argv)
      */
     std_msgs::Float32MultiArray msg;
 
-	msg.data.clear();
+  	msg.data.clear();
 
-    msg.data.push_back(0);
-	msg.data.push_back(0);
-	msg.data.push_back(0);
-	msg.data.push_back(0);
-	msg.data.push_back(100);
-	msg.data.push_back(0);
-	msg.data.push_back(50);
-	msg.data.push_back(30);
-	msg.data.push_back(0);
-	msg.data.push_back(0);
+      msg.data.push_back(0);
+	    msg.data.push_back(0);
+	    msg.data.push_back(0);
+	    msg.data.push_back(0);
+	    msg.data.push_back(100);
+	    msg.data.push_back(0);
+	    msg.data.push_back(50);
+	    msg.data.push_back(30);
+	    msg.data.push_back(0);
+	    msg.data.push_back(0);
 
     /**
      * The publish() function is how you send messages. The parameter
