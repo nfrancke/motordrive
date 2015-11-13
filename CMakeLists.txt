@@ -131,6 +131,7 @@ include_directories(include
 
 ## Declare a C++ executable
 add_executable(uart src/uart.cpp)
+add_executable(multiArraySender src/test1.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -138,6 +139,7 @@ add_executable(uart src/uart.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(uart ${catkin_LIBRARIES} serial)
+target_link_libraries( multiArraySender ${catkin_LIBRARIES})
 
 ##${libserial_LIBRARIES}
 

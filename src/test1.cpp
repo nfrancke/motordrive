@@ -1,5 +1,5 @@
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include <std_msgs/Float32MultiArray.h>
 #include <sstream>
 
 /**
@@ -17,7 +17,7 @@ int main(int argc, char **argv)
    * You must call one of the versions of ros::init() before using any other
    * part of the ROS system.
    */
-  ros::init(argc, argv, "talker");
+  ros::init(argc, argv, "multiArraySender");
 
   /**
    * NodeHandle is the main access point to communications with the ROS system.
@@ -43,27 +43,33 @@ int main(int argc, char **argv)
    * than we can send them, the number here specifies how many messages to
    * buffer up before throwing some away.
    */
-  ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
+  ros::Publisher chatter_pub = n.advertise<std_msgs::Float32MultiArray>("mcWheelVelocityMps", 1000);
 
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(100);
 
   /**
    * A count of how many messages we have sent. This is used to create
    * a unique string for each message.
    */
-  int count = 0;
   while (ros::ok())
   {
     /**
      * This is a message object. You stuff it with data, and then publish it.
      */
-    std_msgs::String msg;
+    std_msgs::Float32MultiArray msg;
 
-    std::stringstream ss;
-    ss << "hello world " << count;
-    msg.data = ss.str();
+	msg.data.clear();
 
-    ROS_INFO("%s", msg.data.c_str());
+    msg.data.push_back(0);
+	msg.data.push_back(0);
+	msg.data.push_back(0);
+	msg.data.push_back(0);
+	msg.data.push_back(100);
+	msg.data.push_back(0);
+	msg.data.push_back(50);
+	msg.data.push_back(30);
+	msg.data.push_back(0);
+	msg.data.push_back(0);
 
     /**
      * The publish() function is how you send messages. The parameter
@@ -76,7 +82,6 @@ int main(int argc, char **argv)
     ros::spinOnce();
 
     loop_rate.sleep();
-    ++count;
   }
 
   return 0;
