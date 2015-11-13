@@ -48,9 +48,9 @@ public:
 		}	
 
 		//for testing
-		serialPorts[5].iSpeed = msg->data[0];
-		serialPorts[7].iSpeed = msg->data[0];
-		serialPorts[8].iSpeed = msg->data[0];
+//		serialPorts[5].iSpeed = msg->data[0];
+//		serialPorts[7].iSpeed = msg->data[0];
+//		serialPorts[8].iSpeed = msg->data[0];
 				
 		for(int i = 0 ; i < 10 ; i++){
 			serialPorts[i].cOutBuf[0] = 0x5a; //start of frame
@@ -61,11 +61,14 @@ public:
 			serialPorts[i].cOutBuf[5] = 0x00; //??
 			serialPorts[i].cOutBuf[6] = 0x00; //??
 			serialPorts[i].cOutBuf[7] = 0x00; //eof
-		}	
+		}
+
+		ROS_INFO("data poort 5 = %i" , serialPorts[5-1].cOutBuf[3]);
+		ROS_INFO("data poort 5 = %i" , serialPorts[5-1].cOutBuf[4]);	
 			
       	serial_port5.write(serialPorts[5-1].cOutBuf, 8);
       	serial_port7.write(serialPorts[7-1].cOutBuf, 8);
-    	serial_port8.write(serialPorts[8-1].cOutBuf, 8);
+	   	serial_port8.write(serialPorts[8-1].cOutBuf, 8);
 	}
 
 private:
