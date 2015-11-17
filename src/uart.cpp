@@ -1,8 +1,20 @@
-//This code wait on a Float32MultiArray message. This values will be send to serial ports.
-//the values needs to be given in mps. a converter factor can be given in a paramter. Also the max and min speed are parameters.
-//
-//author 	: Niek Francke
-//date 		: 13-11-2015
+/*****************************************************************************************************************************************
+Function: 
+This program responds on the receiving of a Float32MultiArray message on topic written in define variable "TOPIC_NAME.
+The only data that this program will read is data[4], data[6] and data[7]. This is because serial port 5,7,8 will be written.
+When the program can't open a serial port the program will be shut down. 
+For debugging it is recommend to set the "log level" of ROS to -> DEBUG. normally it is setted to INFO.
+
+Pre:
+A "ros param" that descibes the factor between the incomming array (RPM) and the sending velocity to the motordrivers.
+two "ros params" that describe the minimum and the maximum of the velocity that will be send to the motordrivers. NOTE: this is no RPM!!!
+
+Post:
+rs422 message on serial bus 5, 6 and 7 that gives the speed in pulses per time sample. The exact message can be found in the outputbuffer.
+
+Writer 		: Niek Francke
+date 		: 13-11-2015
+********************************************************************************************************************************************/
 
 #include <SerialStream.h>
 #include <iostream>
@@ -12,6 +24,7 @@
 #include <std_msgs/Float32MultiArray.h>
 #include "ros/ros.h"
 
+//-----settings
 #define MOTORDRIVER_START_OF_FRAME 	0x5a
 #define MOTORDRIVER_TYPE 			0xaa
 #define MOTORDRIVER_CMD				0x03
@@ -27,6 +40,10 @@ SerialStream serial_port5;
 SerialStream serial_port7;
 SerialStream serial_port8;
 
+
+/*****************************************************************************************************************************************
+Start defining class Subscribe
+********************************************************************************************************************************************/
 class Subscribe
 {
 public:
@@ -35,10 +52,12 @@ public:
 	int iConvertFactor;								//this factor will convert data from RPM to pulses/time value
 	int iMaxPulseSpeed; 
 	int iMinPulseSpeed;
-
+	
+	///////////////////////////////////////////////////////////////////////////////////////////
 	//Function: create class and read params
 	//pre: 	-
 	//post: iConvertFactor will be 0 if there is no param readed.
+	///////////////////////////////////////////////////////////////////////////////////////////
 	Subscribe(ros::NodeHandle nh)
 	{
 		sub = nh.subscribe(TOPIC_NAME,TOPIC_BUFFER_SIZE, &Subscribe::commandRpmReceived, this);
@@ -76,10 +95,12 @@ public:
 			iMinPulseSpeed = 0;
 		}
 	}
-
+	
+	/////////////////////////////////////////////////////////////////////////////
 	//function: this function responds on a float32MultiArray message.
 	//pre: values for array places 4,6,7, because the serial ports are 5,7 and 8
 	//post: -
+	/////////////////////////////////////////////////////////////////////////////
 	void commandRpmReceived(const std_msgs::Float32MultiArray::ConstPtr& msg)
 	{
 		ROS_INFO_ONCE("first time a FLoat32MultiArray is received");
@@ -131,15 +152,22 @@ public:
 
 private:
 	ros::Subscriber sub;	//define ros subscriber
-};//end of class Subscribe
+};
+/*****************************************************************************************************************************************
+end of defining class Subscribe
+********************************************************************************************************************************************/
 
+///////////////////////////////////////////////////////////////////////////////////////////
 //function: initialize serial port "string sSerialPort" as follows:
 //			baud = 115200, char_size = 8, parity = none, stop bits = 2 and no flauw control
 //pre: 
 //post: return 1 if its done. return 0 if it fails.		
+////////////////////////////////////////////////////////////////////////////////////////////
 bool initSerialPort(SerialStream& serial_port, string sSerialPort);
 
-
+/*****************************************************************************************************************************************
+Start of main
+********************************************************************************************************************************************/
 int main(int argc, char **argv  )
 {
 	//initialize ROS
@@ -166,10 +194,20 @@ int main(int argc, char **argv  )
 	return 0;
 }
 
+/*****************************************************************************************************************************************
+End of main
+********************************************************************************************************************************************/
+
+
+/*****************************************************************************************************************************************
+Functions
+********************************************************************************************************************************************/
+//////////////////////////////////////////////////////////////////////////////////////////////
 //function: initialize serial port "string sSerialPort" as follows:
 //			baud = 115200, char_size = 8, parity = none, stop bits = 2 and no flauw control
 //pre: 
 //post: return 1 if its done. return 0 if it fails.		
+//////////////////////////////////////////////////////////////////////////////////////////////
 bool initSerialPort(SerialStream& serialPort,string sSerialPort){
 	//
 	//Open the serial port
@@ -243,3 +281,6 @@ bool initSerialPort(SerialStream& serialPort,string sSerialPort){
 
 return 1;
 }
+/*****************************************************************************************************************************************
+End of functions
+********************************************************************************************************************************************/
