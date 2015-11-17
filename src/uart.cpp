@@ -30,7 +30,7 @@ date 		: 13-11-2015
 #define MOTORDRIVER_CMD				0x03
 #define MOTORDRIVER_END_OF_FRAME	0x00
 #define TOPIC_NAME 					"mcWheelVelocityMps"
-#define TOPIC_BUFFER_SIZE			1000
+#define TOPIC_BUFFER_SIZE			1
 
 using namespace std;
 using namespace LibSerial;
@@ -140,8 +140,10 @@ public:
 
 		//print speed data that will be send to motordrivers.
 		for(int i = 0 ; i < 10 ; i++){
-			ROS_DEBUG("data poort %i byte 3 = %i" , i,serialPorts[i].cOutBuf[3]);
-			ROS_DEBUG("data poort %i byte 4 = %i" , i,serialPorts[i].cOutBuf[4]);	
+			//int iVelocity = (serialPorts[i].cOutBuf[4] << 8) + serialPorts[i].cOutBuf[3];
+			ROS_DEBUG("data poort %i byte 3 = %i" , i,serialPorts[i].iSpeed);
+			ROS_DEBUG("data poort %i byte 3 = %X" , i,serialPorts[i].cOutBuf[3]);
+			ROS_DEBUG("data poort %i byte 4 = %X" , i,serialPorts[i].cOutBuf[4]);	
 		}
 
 		//Write serial ports. the value will be minus 1 because it will match with the serialPorts array.	

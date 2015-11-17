@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	    msg.data.push_back(0);
 	    msg.data.push_back(-300);
 	    msg.data.push_back(0);
-	    msg.data.push_back(50);
+	    msg.data.push_back(-128);
 	    msg.data.push_back(30);
 	    msg.data.push_back(0);
 	    msg.data.push_back(0);
