@@ -97,9 +97,11 @@ public:
 			//overload protection
 			if(serialPorts[i].iSpeed >= iMaxPulseSpeed){
 				serialPorts[i].iSpeed = iMaxPulseSpeed;
+				ROS_DEBUG("Speed is above maximum speed");
 			}
 			if(serialPorts[i].iSpeed <= iMinPulseSpeed){
 				serialPorts[i].iSpeed = iMinPulseSpeed;
+				ROS_DEBUG("Speed is below minimum speed");
 			}
 		}	
 		
